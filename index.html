@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trader Joe's-dle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --tj-red: #cc2529;
+    --tj-red-dark: #a31e21;
+    --tj-navy: #003d5b;
+    --tj-navy-light: #005580;
+    --tj-cream: #fdf8f0;
+    --tj-tan: #f0e8d8;
+    --tj-green: #2d7a2d;
+    --tj-orange: #d4760a;
+    --tj-text: #1a1a1a;
+    --tj-muted: #666;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--tj-cream);
+    color: var(--tj-text);
+    min-height: 100vh;
+  }
+
+  /* Header */
+  header {
+    background: var(--tj-red);
+    padding: 0;
+    text-align: center;
+    border-bottom: 6px solid var(--tj-red-dark);
+    position: relative;
+    overflow: hidden;
+  }
+  .header-inner {
+    padding: 10px 24px 8px;
+    position: relative;
+  }
+  .header-eyebrow {
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 2px;
+  }
+  h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: clamp(22px, 5vw, 30px);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.1;
+  }
+  h1 span { font-style: italic; color: rgba(255,255,255,0.9); }
+  .header-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.8);
+    margin-top: 3px;
+    font-weight: 600;
+  }
+  .date-badge {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.9);
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  /* Help bar */
+  .help-bar {
+    background: var(--tj-navy);
+    padding: 8px 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.85);
+    font-weight: 600;
+  }
+  .legend-dot {
+    width: 14px; height: 14px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .dot-green { background: #2d7a2d; }
+  .dot-orange { background: #d4760a; }
+  .dot-red { background: #b22222; }
+
+  /* Main content */
+  main {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 14px 16px 20px;
+  }
+
+  /* Product card */
+  .product-card {
+    background: #fff;
+    border: 2px solid var(--tj-tan);
+    border-radius: 16px;
+    padding: 12px 20px;
+    text-align: center;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .product-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--tj-red);
+    margin-bottom: 4px;
+  }
+  .product-name {
+    font-family: 'Libre Baskerville', serif;
+    font-size: clamp(16px, 3.5vw, 20px);
+    font-weight: 700;
+    color: var(--tj-navy);
+    line-height: 1.3;
+  }
+  .product-image-wrap {
+    width: 120px;
+    height: 120px;
+    margin: 8px auto 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+  }
+  .product-image-wrap.loading {
+    background: var(--tj-tan);
+    animation: imagePulse 1.2s ease infinite;
+  }
+  @keyframes imagePulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+  }
+  .product-image-wrap img {
+    max-width: 120px;
+    max-height: 120px;
+    object-fit: contain;
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .product-image-wrap img.loaded { opacity: 1; }
+  .product-badge {
+    display: inline-block;
+    background: var(--tj-navy);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 10px;
+  }
+
+  /* Guess tracker dots */
+  .guess-tracker {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .tracker-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    background: transparent;
+    transition: all 0.2s;
+  }
+  .tracker-dot.used { border-color: var(--tj-navy); background: var(--tj-navy); }
+  .tracker-dot.correct { border-color: var(--tj-green); background: var(--tj-green); }
+
+  /* Guess history */
+  .guess-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .guess-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    border: 2px solid var(--tj-tan);
+    border-radius: 10px;
+    padding: 8px 12px;
+  }
+  .guess-row.empty {
+    opacity: 0.35;
+  }
+  .guess-row.filled {
+    animation: flipReveal 0.8s ease forwards;
+  }
+  @keyframes flipReveal {
+    from { transform: rotateX(90deg); opacity: 0.35; }
+    to { transform: rotateX(0deg); opacity: 1; }
+  }
+  .guess-color {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+  .guess-color.green { background: #e8f5e8; color: var(--tj-green); border: 2px solid #b8e0b8; }
+  .guess-color.orange { background: #fff4e0; color: var(--tj-orange); border: 2px solid #ffd88a; }
+  .guess-color.red { background: #fde8e8; color: #b22222; border: 2px solid #f5b8b8; }
+  .guess-info { flex: 1; }
+  .guess-price {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--tj-navy);
+  }
+  .guess-desc {
+    font-size: 12px;
+    color: var(--tj-muted);
+    font-weight: 600;
+    margin-top: 2px;
+  }
+  .guess-arrow {
+    font-size: 18px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .arrow-up { color: var(--tj-green); }
+  .arrow-down { color: var(--tj-red); }
+  .arrow-green { color: var(--tj-green); }
+  .arrow-orange { color: var(--tj-orange); }
+  .arrow-red { color: #b22222; }
+
+  /* Input area */
+  .input-area {
+    background: #fff;
+    border: 2px solid var(--tj-tan);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+  }
+  .input-label {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--tj-muted);
+    margin-bottom: 6px;
+    display: block;
+  }
+  .input-row {
+    display: flex;
+    gap: 10px;
+  }
+  .price-input-wrap {
+    display: flex;
+    align-items: center;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    flex: 1;
+    background: var(--tj-cream);
+    transition: border-color 0.15s;
+  }
+  .price-input-wrap:focus-within {
+    border-color: var(--tj-navy);
+  }
+  .dollar-sign {
+    padding: 0 12px;
+    font-size: 22px;
+    font-family: 'Libre Baskerville', serif;
+    font-weight: 700;
+    color: var(--tj-navy);
+    background: transparent;
+  }
+  .price-input {
+    border: none;
+    background: transparent;
+    font-size: 22px;
+    font-family: 'Libre Baskerville', serif;
+    font-weight: 700;
+    color: var(--tj-navy);
+    width: 100%;
+    outline: none;
+    padding: 10px 12px 10px 0;
+  }
+  .price-input::placeholder { color: #bbb; }
+  .price-input::-webkit-outer-spin-button,
+  .price-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .guess-btn {
+    background: var(--tj-red);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 0 22px;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .guess-btn:hover { background: var(--tj-red-dark); }
+  .guess-btn:active { transform: scale(0.97); }
+  .guess-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+  .error-msg {
+    color: var(--tj-red);
+    font-size: 12px;
+    font-weight: 700;
+    min-height: 0;
+  }
+  .error-msg:not(:empty) {
+    margin-top: 6px;
+  }
+
+  /* Result panel */
+  .result-panel {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px 20px;
+    text-align: center;
+    border: 3px solid;
+    margin-bottom: 10px;
+    animation: slideIn 0.3s ease;
+  }
+  .result-panel.win { border-color: var(--tj-green); }
+  .result-panel.lose { border-color: var(--tj-red); }
+  .result-icon { font-size: 32px; margin-bottom: 6px; }
+  .result-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .result-panel.win .result-title { color: var(--tj-green); }
+  .result-panel.lose .result-title { color: var(--tj-red); }
+  .result-reveal {
+    font-size: 14px;
+    color: var(--tj-muted);
+    margin-bottom: 4px;
+  }
+  .result-price {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--tj-navy);
+    margin-bottom: 10px;
+  }
+
+  .share-btn {
+    background: var(--tj-navy);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 22px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-right: 8px;
+  }
+  .share-btn:hover { background: var(--tj-navy-light); }
+  .copy-notice {
+    font-size: 12px;
+    color: var(--tj-green);
+    font-weight: 700;
+    margin-top: 8px;
+    height: 16px;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 16px;
+    font-size: 11px;
+    color: var(--tj-muted);
+    border-top: 1px solid var(--tj-tan);
+  }
+  footer a { color: var(--tj-navy); }
+
+  /* Shake animation for bad input */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+  .shake { animation: shake 0.35s ease; }
+
+  /* Stats modal */
+  .stats-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+  }
+  .stats-overlay.open { display: flex; }
+  .stats-modal {
+    background: var(--tj-cream);
+    border-radius: 16px;
+    padding: 28px 24px;
+    max-width: 380px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+  }
+  .stats-close {
+    position: absolute;
+    top: 12px; right: 14px;
+    background: none; border: none;
+    font-size: 22px; cursor: pointer;
+    color: var(--tj-muted);
+    font-weight: 700;
+  }
+  .stats-heading {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--tj-red);
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .stats-grid {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stat-box {
+    text-align: center;
+    min-width: 52px;
+  }
+  .stat-num {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--tj-navy);
+  }
+  .stat-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--tj-muted);
+    line-height: 1.3;
+  }
+  .dist-heading {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--tj-red);
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .dist-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .dist-label {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--tj-navy);
+    width: 14px;
+    text-align: right;
+  }
+  .dist-bar-wrap {
+    flex: 1;
+    background: var(--tj-tan);
+    border-radius: 4px;
+    height: 24px;
+    position: relative;
+  }
+  .dist-bar {
+    height: 100%;
+    background: var(--tj-navy);
+    border-radius: 4px;
+    min-width: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #fff;
+    transition: width 0.4s ease;
+  }
+  .dist-bar.highlight { background: var(--tj-green); }
+  .stats-btn {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 8px;
+    color: rgba(255,255,255,0.9);
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    padding: 6px 10px;
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+  }
+  .stats-btn:hover { color: #fff; background: rgba(255,255,255,0.25); }
+
+  /* Confetti */
+  .confetti-piece {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    border-radius: 1px;
+    animation: confettiFall linear forwards;
+    pointer-events: none;
+    z-index: 9999;
+  }
+  @keyframes confettiFall {
+    0%   { opacity: 1; transform: translateY(0) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-eyebrow">The Daily Price Challenge</div>
+    <h1>Trader <span>Joe's</span>-dle</h1>
+    <div class="header-sub">Guess the Trader Joe's price in 6 tries</div>
+    <button class="stats-btn" onclick="openStats()" title="Statistics">Stats</button>
+    <div class="date-badge" id="dateBadge">—</div>
+  </div>
+</header>
+
+<div class="help-bar">
+  <div class="legend-item">
+    <div class="legend-dot dot-green"></div>Within 5% — you win!
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot dot-orange"></div>Within 25%
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot dot-red"></div>More than 25% off
+  </div>
+</div>
+
+<main>
+  <div class="product-card">
+    <div class="product-label">Today's product</div>
+    <div class="product-name" id="productName">Loading...</div>
+    <div class="product-image-wrap loading" id="productImageWrap"></div>
+  </div>
+
+  <div class="guess-tracker" id="guessDots"></div>
+
+  <div class="guess-list" id="guessList"></div>
+
+  <div class="input-area" id="inputArea">
+    <label class="input-label">Your price guess</label>
+    <div class="input-row">
+      <div class="price-input-wrap" id="inputWrap">
+        <span class="dollar-sign">$</span>
+        <input
+          type="number"
+          class="price-input"
+          id="priceInput"
+          placeholder="0.00"
+          min="0"
+          step="0.01"
+        >
+      </div>
+      <button class="guess-btn" id="guessBtn" onclick="submitGuess()">Guess</button>
+    </div>
+    <div class="error-msg" id="errorMsg"></div>
+  </div>
+
+  <div class="result-panel win" id="resultPanel" style="display:none">
+    <div class="result-icon" id="resultIcon"></div>
+    <div class="result-title" id="resultTitle"></div>
+    <div class="result-reveal">The actual price is</div>
+    <div class="result-price" id="resultPrice"></div>
+    <button class="share-btn" onclick="shareResult()">Share Result</button>
+    <div class="copy-notice" id="copyNotice"></div>
+  </div>
+</main>
+
+<div class="stats-overlay" id="statsOverlay" onclick="if(event.target===this)closeStats()">
+  <div class="stats-modal">
+    <button class="stats-close" onclick="closeStats()">✕</button>
+    <div class="stats-heading">Statistics</div>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-num" id="statPlayed">0</div><div class="stat-label">Played</div></div>
+      <div class="stat-box"><div class="stat-num" id="statWinPct">0</div><div class="stat-label">Win %</div></div>
+      <div class="stat-box"><div class="stat-num" id="statStreak">0</div><div class="stat-label">Current<br>Streak</div></div>
+      <div class="stat-box"><div class="stat-num" id="statMaxStreak">0</div><div class="stat-label">Max<br>Streak</div></div>
+    </div>
+    <div class="dist-heading">Guess Distribution</div>
+    <div id="distBars"></div>
+  </div>
+</div>
+
+<footer>
+  Prices sourced from <a href="https://traderjoesprices.com" target="_blank">traderjoesprices.com</a> (Chicago store, may vary by region).
+  Not affiliated with Trader Joe's.
+</footer>
+
+<script>
+const PRODUCTS = [
+  { name: "Bananas (each)", price: 0.23, sku: "048053", img: "/content/dam/trjo/products/m20701/48053.png" },
+  { name: "Black Beans (can)", price: 0.99, sku: "009636", img: "/content/dam/trjo/products/m20902/09636.png" },
+  { name: "Sweet Potato (each)", price: 0.99, sku: "097997", img: "/content/dam/trjo/products/m20702/97997.png" },
+  { name: "Russet Potatoes (each)", price: 0.99, sku: "099095", img: "/content/dam/trjo/products/m20702/99095.png" },
+  { name: "Organic Garbanzo Beans (can)", price: 1.19, sku: "050261", img: "/content/dam/trjo/products/m20902/50261.png" },
+  { name: "Chocolate Covered Wafer Cookie", price: 1.09, sku: "058527", img: "/content/dam/trjo/products/m21002/58527.png" },
+  { name: "A Handful of Tiny Dark Chocolate Covered Pretzels", price: 1.29, sku: "077629", img: "/content/dam/trjo/products/m21002/77629.png" },
+  { name: "Bamba Peanut Snacks", price: 1.79, sku: "058373", img: "/content/dam/trjo/products/m21001/58373.png" },
+  { name: "85% Dark Chocolate Bar from Uganda", price: 1.99, sku: "066292", img: "/content/dam/trjo/products/m21002/66292.png" },
+  { name: "Joe's O's Cereal", price: 1.99, sku: "036592", img: "/content/dam/trjo/products/m20907/36592.png" },
+  { name: "All Natural Bone-In Skin-On Chicken Thighs (per lb)", price: 1.99, sku: "061046", img: "/content/dam/trjo/products/m20802/61046.png" },
+  { name: "All Natural Chicken Drumsticks (per lb)", price: 1.99, sku: "090594", img: "/content/dam/trjo/products/m20802/90594.png" },
+  { name: "Ajika Georgian Seasoning Blend", price: 1.99, sku: "068324", img: null },
+  { name: "3 Seed Beet Crackers", price: 1.99, sku: "059415", img: null },
+  { name: "Organic Dark Chocolate Bar 73% Cacao", price: 2.29, sku: "070561", img: "/content/dam/trjo/products/m21002/70561.png" },
+  { name: "Organic 3 Grain Tempeh", price: 2.49, sku: "099125", img: "/content/dam/trjo/products/m20804/99125.png" },
+  { name: "Roasted Garlic Hummus", price: 2.49, sku: "029911", img: "/content/dam/trjo/products/m20404/29911.png" },
+  { name: "Balsamic Vinegar of Modena", price: 2.49, sku: "058036", img: "/content/dam/trjo/products/m20904/58036.png" },
+  { name: "Organic Ketchup", price: 2.49, sku: "055860", img: "/content/dam/trjo/products/m20401/55860.png" },
+  { name: "Black Peppercorns with Grinder", price: 2.49, sku: "057365", img: "/content/dam/trjo/products/m20906/57365.png" },
+  { name: "Mangos (each)", price: 1.99, sku: "078963", img: "/content/dam/trjo/products/m20701/78963.png" },
+  { name: "Baby Cauliflower", price: 2.69, sku: "066248", img: null },
+  { name: "Baby Corn", price: 2.79, sku: "073111", img: "/content/dam/trjo/products/m20702/73111.png" },
+  { name: "Banana Bread Mix", price: 2.99, sku: "085218", img: "/content/dam/trjo/products/m20905/85218.png" },
+  { name: "Beer Bread Mix", price: 2.99, sku: "093094", img: "/content/dam/trjo/products/m20905/93094.png" },
+  { name: "Non-Dairy Oat Beverage", price: 2.99, sku: "065148", img: "/content/dam/trjo/products/m303/65148.png" },
+  { name: "Hashbrowns", price: 2.99, sku: "094769", img: "/content/dam/trjo/products/m20602/94769.png" },
+  { name: "Honey O's Cereal", price: 2.69, sku: "038552", img: "/content/dam/trjo/products/m20907/38552.png" },
+  { name: "White Cheddar Popcorn", price: 1.99, sku: "005985", img: "/content/dam/trjo/products/m21001/05985.png" },
+  { name: "Scandinavian Swimmers", price: 3.79, sku: "055691", img: "/content/dam/trjo/products/m21002/55691.png" },
+  { name: "Crumbled Feta", price: 3.29, sku: "025966", img: "/content/dam/trjo/products/m20201/25966.png" },
+  { name: "4 Cheese Ravioli", price: 3.29, sku: "074256", img: "/content/dam/trjo/products/m20503/74256.png" },
+  { name: "Spinach Tortellini", price: 3.29, sku: "095231", img: "/content/dam/trjo/products/m20503/95231.png" },
+  { name: "Coconut Water 1L", price: 3.29, sku: "097911", img: "/content/dam/trjo/products/m302/97911.png" },
+  { name: "Candy Coated Chocolates", price: 3.29, sku: "071007", img: "/content/dam/trjo/products/m21002/71007.png" },
+  { name: "Campari Tomatoes", price: 3.49, sku: "095554", img: "/content/dam/trjo/products/m20702/95554.png" },
+  { name: "Hatch Chile Mac & Cheese", price: 3.49, sku: "056018", img: "/content/dam/trjo/products/m20602/56018.png" },
+  { name: "Beef Pho", price: 3.49, sku: "065920", img: "/content/dam/trjo/products/m20602/65920.png" },
+  { name: "Avocado Mash", price: 3.49, sku: "074214", img: "/content/dam/trjo/products/m20404/74214.png" },
+  { name: "Blueberry Dream Frozen Dessert Bars", price: 3.49, sku: "074250", img: "/content/dam/trjo/products/m20604/74250.png" },
+  { name: "Japanese Soufflé Cheesecakes", price: 3.49, sku: "075998", img: "/content/dam/trjo/products/m20604/75998.png" },
+  { name: "Strawberries 1 Lb", price: 3.49, sku: "035878", img: "/content/dam/trjo/products/m20701/strawberries.png" },
+  { name: "Sliced Prosciutto", price: 4.29, sku: "098861", img: "/content/dam/trjo/products/m20801/98861.png" },
+  { name: "Brigadeiros", price: 3.79, sku: "075459", img: "/content/dam/trjo/products/m20604/75459.png" },
+  { name: "Feta Cheese", price: 3.79, sku: "079858", img: "/content/dam/trjo/products/m20203/79858.png" },
+  { name: "Chocolate Lava Cakes", price: 3.99, sku: "001070", img: "/content/dam/trjo/products/m20604/01070.png" },
+  { name: "Brioche Buns", price: 3.99, sku: "061752", img: "/content/dam/trjo/products/m20102/61752.png" },
+  { name: "String Cheese", price: 3.99, sku: "030337", img: "/content/dam/trjo/products/m20202/30337.png" },
+  { name: "Dark Chocolate Orange Sticks", price: 3.99, sku: "060414", img: "/content/dam/trjo/products/m21002/60414.png" },
+  { name: "Organic Basmati Rice", price: 3.99, sku: "079172", img: "/content/dam/trjo/products/m20901/79172.png" },
+  { name: "Spanish Style Rice", price: 3.99, sku: "073936", img: "/content/dam/trjo/products/m20602/73936.png" },
+  { name: "Japanese Style Fried Rice", price: 3.99, sku: "097908", img: "/content/dam/trjo/products/m20602/97908.png" },
+  { name: "Apple Cider Donuts", price: 4.49, sku: "064320", img: "/content/dam/trjo/products/m20105/64320.png" },
+  { name: "Mashed Potatoes", price: 4.49, sku: "074158", img: "/content/dam/trjo/products/m20602/74158.png" },
+  { name: "Cocoa Truffles", price: 4.49, sku: "044575", img: "/content/dam/trjo/products/m21002/44575.png" },
+  { name: "Black Bean & Cheese Taquitos", price: 4.49, sku: "065291", img: "/content/dam/trjo/products/m20602/65291.png" },
+  { name: "Almond Butter Filled Pretzel Nuggets", price: 4.49, sku: "070721", img: "/content/dam/trjo/products/m21001/70721.png" },
+  { name: "Raw Almonds", price: 4.99, sku: "007995", img: "/content/dam/trjo/products/m21003/07995.png" },
+  { name: "Avocados 4 count", price: 4.99, sku: "112550", img: "/content/dam/trjo/products/m20701/12550.png" },
+  { name: "Blueberry Muffins", price: 4.99, sku: "064741", img: "/content/dam/trjo/products/m20105/64741.png" },
+  { name: "All Butter Puff Pastry Sheets", price: 4.99, sku: "057182", img: "/content/dam/trjo/products/m20604/57182.png" },
+  { name: "100% Colombian Instant Coffee", price: 4.79, sku: "093200", img: "/content/dam/trjo/products/m304/93200.png" },
+  { name: "Triple Ginger Snaps", price: 4.79, sku: "025493", img: "/content/dam/trjo/products/m21002/25493.png" },
+  { name: "Cinnamon Graham Crackers", price: 4.79, sku: "043871", img: "/content/dam/trjo/products/m21002/43871.png" },
+  { name: "Grainless Granola", price: 4.69, sku: "068388", img: "/content/dam/trjo/products/m20907/68388.png" },
+  { name: "100% Orange Juice No Pulp", price: 4.99, sku: "066569", img: "/content/dam/trjo/products/m301/66569.png" },
+  { name: "Brookie", price: 4.99, sku: "061281", img: "/content/dam/trjo/products/m20105/61281.png" },
+  { name: "BBQ Chicken Pizza", price: 5.49, sku: "090460", img: "/content/dam/trjo/products/m20602/90460.png" },
+  { name: "Dark Chocolate Bark with Almond, Pretzel & Sea Salt", price: 5.49, sku: "073946", img: "/content/dam/trjo/products/m21002/73946.png" },
+  { name: "Italian Tiramisu", price: 5.49, sku: "076021", img: "/content/dam/trjo/products/m20604/76021.png" },
+  { name: "Breaded Mozzarella Cheese Sticks", price: 5.49, sku: "050209", img: "/content/dam/trjo/products/m20601/50209.png" },
+  { name: "Organic Unbleached All-Purpose Flour", price: 5.49, sku: "069793", img: "/content/dam/trjo/products/m20905/69793.png" },
+  { name: "Organic Free Range Boneless Skinless Chicken Breasts", price: 7.49, sku: "063550", img: "/content/dam/trjo/products/m20802/63550.png" },
+  { name: "Italian Style Meatballs", price: 5.99, sku: "044919", img: "/content/dam/trjo/products/m20602/44919.png" },
+  { name: "Pasture Raised Large Brown Eggs", price: 5.99, sku: "062124", img: "/content/dam/trjo/products/m20304/62124.png" },
+  { name: "8 Mini Croissants", price: 5.99, sku: "065467", img: "/content/dam/trjo/products/m20602/65467.png" },
+  { name: "Double Chocolate Croissants", price: 5.99, sku: "075819", img: "/content/dam/trjo/products/m20604/75819.png" },
+  { name: "4 Almond Croissants", price: 5.99, sku: "098265", img: "/content/dam/trjo/products/m20604/98265.png" },
+  { name: "4 Chocolate Croissants", price: 5.99, sku: "091087", img: "/content/dam/trjo/products/m20604/91087.png" },
+  { name: "Milk Chocolate Peanut Butter Cups", price: 5.99, sku: "022129", img: "/content/dam/trjo/products/m21002/22129.png" },
+  { name: "Dark Chocolate Peanut Butter Cups", price: 5.99, sku: "094064", img: "/content/dam/trjo/products/m21002/94064.png" },
+  { name: "Joe Medium Roast Ground Coffee", price: 6.49, sku: "056332", img: "/content/dam/trjo/products/m304/56332.png" },
+  { name: "Joe's Dark Ground Coffee", price: 6.49, sku: "056333", img: "/content/dam/trjo/products/m304/56333.png" },
+  { name: "Roasted Garlic & Pesto Pizza with Deep Fried Crust", price: 6.49, sku: "068834", img: "/content/dam/trjo/products/m20602/68834.png" },
+  { name: "Organic Pasture Raised Large Brown Eggs", price: 6.99, sku: "072270", img: "/content/dam/trjo/products/m20304/72270.png" },
+  { name: "Organic Pitted Medjool Dates", price: 5.99, sku: "064778", img: "/content/dam/trjo/products/m20701/64778.png" },
+  { name: "Dark Chocolate Covered Cherries", price: 6.49, sku: "050631", img: "/content/dam/trjo/products/m21002/50631.png" },
+  { name: "Pound Plus 72% Cacao Dark Chocolate", price: 7.99, sku: "048875", img: "/content/dam/trjo/products/m21002/48875.png" },
+  { name: "Matcha Green Tea Powder", price: 7.99, sku: "057159", img: "/content/dam/trjo/products/m304/57159.png" },
+  { name: "Avocado Oil", price: 7.99, sku: "056687", img: "/content/dam/trjo/products/m20904/56687.png" },
+  { name: "Argentinian Red Shrimp with Ginger Garlic Butter", price: 7.99, sku: "070359", img: "/content/dam/trjo/products/m20803/70359.png" },
+  { name: "All Natural Pasture Raised Heirloom Chicken Breasts", price: 7.99, sku: "075609", img: "/content/dam/trjo/products/m20802/75609-13788.png" },
+  { name: "Double Cream Brie", price: 8.49, sku: "074953", img: "/content/dam/trjo/products/m20203/74953.png" },
+  { name: "Green Goddess Gouda", price: 9.99, sku: "071172", img: "/content/dam/trjo/products/m20203/71172.png" },
+  { name: "Beehive Promontory Cheese", price: 9.99, sku: "073581", img: "/content/dam/trjo/products/m20203/73581.png" },
+  { name: "Cheddar Cheese with Caramelized Onions", price: 10.99, sku: "052381", img: "/content/dam/trjo/products/m20203/52381.png" },
+  { name: "Extra Virgin Olive Oil Liter", price: 10.99, sku: "001465", img: "/content/dam/trjo/products/m20904/01465.png" },
+  { name: "Fresh Atlantic Salmon Boneless Skinless Fillet", price: 11.99, sku: "021717", img: "/content/dam/trjo/products/m20803/21717.png" },
+  { name: "Carne Asada Autentica", price: 11.99, sku: "075977", img: "/content/dam/trjo/products/m20801/75977.png" },
+  { name: "Balsamic Glazed Bone-In Beef Short Ribs", price: 11.99, sku: "068788", img: "/content/dam/trjo/products/m20503/68788.png" },
+  { name: "Baked Lemon Ricotta Cheese", price: 13.99, sku: "057341", img: "/content/dam/trjo/products/m20203/57341.png" },
+  { name: "Beef New York Strip Steak", price: 14.99, sku: "056224", img: "/content/dam/trjo/products/m20801/56224.png" },
+  { name: "Korean Style Beef Short Ribs", price: 14.99, sku: "090809", img: "/content/dam/trjo/products/m20602/90809.png" },
+  { name: "Manchego Cheese", price: 14.99, sku: "033331", img: "/content/dam/trjo/products/m20203/33331.png" },
+  { name: "Beef Rib Eye Steak", price: 15.99, sku: "056225", img: "/content/dam/trjo/products/m20801/56225.png" },
+  { name: "Beef Filet Mignon Steak", price: 21.99, sku: "056226", img: "/content/dam/trjo/products/m20801/56226.png" },
+];
+
+const MAX_GUESSES = 6;
+const WIN_THRESHOLD = 0.05;
+const CLOSE_THRESHOLD = 0.25;
+
+let guesses = [];
+let gameOver = false;
+let won = false;
+
+function getDayIndex() {
+  const epoch = new Date('2024-01-01');
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  return Math.floor((today - epoch) / 86400000);
+}
+
+function getProduct() {
+  const day = getDayIndex();
+  const idx = (day * 53 + 17) % PRODUCTS.length;
+  return PRODUCTS[idx];
+}
+
+let product = getProduct();
+
+function init() {
+  document.getElementById('productName').textContent = product.name;
+  const now = new Date();
+  const opts = { weekday: 'short', month: 'short', day: 'numeric' };
+  document.getElementById('dateBadge').innerHTML =
+    now.toLocaleDateString('en-US', opts);
+  renderDots();
+  renderEmptyRows();
+  loadProductImage();
+  restoreGame();
+
+  document.getElementById('priceInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitGuess();
+  });
+}
+
+function saveGame() {
+  const data = { day: getDayIndex(), guesses, gameOver, won };
+  localStorage.setItem('tjdle_state', JSON.stringify(data));
+}
+
+function getStats() {
+  try {
+    const raw = localStorage.getItem('tjdle_stats');
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return { played: 0, wins: 0, streak: 0, maxStreak: 0, lastDay: -1, dist: {1:0,2:0,3:0,4:0,5:0,6:0} };
+}
+
+function saveStats(s) {
+  localStorage.setItem('tjdle_stats', JSON.stringify(s));
+}
+
+function recordStats() {
+  const s = getStats();
+  const today = getDayIndex();
+  if (s.lastDay === today) return;
+  s.played++;
+  if (won) {
+    s.wins++;
+    s.streak = (s.lastDay === today - 1 || s.played === 1) ? s.streak + 1 : 1;
+    s.dist[guesses.length] = (s.dist[guesses.length] || 0) + 1;
+  } else {
+    s.streak = 0;
+  }
+  if (s.streak > s.maxStreak) s.maxStreak = s.streak;
+  s.lastDay = today;
+  saveStats(s);
+}
+
+function openStats() {
+  const s = getStats();
+  document.getElementById('statPlayed').textContent = s.played;
+  document.getElementById('statWinPct').textContent = s.played ? Math.round((s.wins / s.played) * 100) : 0;
+  document.getElementById('statStreak').textContent = s.streak;
+  document.getElementById('statMaxStreak').textContent = s.maxStreak;
+  const container = document.getElementById('distBars');
+  container.innerHTML = '';
+  const maxVal = Math.max(1, ...Object.values(s.dist));
+  for (let i = 1; i <= 6; i++) {
+    const count = s.dist[i] || 0;
+    const pct = Math.max(8, (count / maxVal) * 100);
+    const isHighlight = gameOver && won && guesses.length === i;
+    container.innerHTML += `<div class="dist-row"><div class="dist-label">${i}</div><div class="dist-bar-wrap"><div class="dist-bar${isHighlight ? ' highlight' : ''}" style="width:${pct}%">${count}</div></div></div>`;
+  }
+  document.getElementById('statsOverlay').classList.add('open');
+}
+
+function closeStats() {
+  document.getElementById('statsOverlay').classList.remove('open');
+}
+
+function restoreGame() {
+  try {
+    const raw = localStorage.getItem('tjdle_state');
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (data.day !== getDayIndex()) { localStorage.removeItem('tjdle_state'); return; }
+    const actual = product.price;
+    data.guesses.forEach((g, i) => {
+      guesses.push(g);
+      renderGuess(g, actual, i);
+    });
+    won = data.won;
+    gameOver = data.gameOver;
+    renderDots();
+    if (gameOver) {
+      document.getElementById('inputArea').style.display = 'none';
+      showResult(actual);
+    }
+  } catch (e) { /* ignore corrupt data */ }
+}
+
+function loadProductImage() {
+  const wrap = document.getElementById('productImageWrap');
+  if (!product.img) {
+    showImageFallback(wrap);
+    return;
+  }
+  const base = 'https://www.traderjoes.com' + product.img;
+  const img = document.createElement('img');
+  img.alt = product.name;
+  img.referrerPolicy = 'no-referrer';
+  img.onload = () => { wrap.classList.remove('loading'); img.classList.add('loaded'); };
+  img.onerror = () => {
+    if (img.src !== base) { img.src = base; }
+    else { showImageFallback(wrap); }
+  };
+  img.src = base + '/jcr:content/renditions/cq5dam.thumbnail.319.319.png';
+  wrap.appendChild(img);
+}
+
+function showImageFallback(wrap) {
+  wrap.classList.remove('loading');
+  wrap.innerHTML = '<div style="font-size:48px;line-height:120px;">🛒</div>';
+}
+
+
+function renderEmptyRows() {
+  const list = document.getElementById('guessList');
+  list.innerHTML = '';
+  for (let i = 0; i < MAX_GUESSES; i++) {
+    const row = document.createElement('div');
+    row.className = 'guess-row empty';
+    row.id = `guess-row-${i}`;
+
+    const colorIcon = document.createElement('div');
+    colorIcon.className = 'guess-color';
+    colorIcon.style.background = 'var(--tj-tan)';
+    colorIcon.style.border = '2px solid #ddd';
+
+    const info = document.createElement('div');
+    info.className = 'guess-info';
+    const priceEl = document.createElement('div');
+    priceEl.className = 'guess-price';
+    priceEl.style.color = '#ccc';
+    priceEl.textContent = '—';
+    info.appendChild(priceEl);
+
+    const arrowEl = document.createElement('div');
+    arrowEl.className = 'guess-arrow';
+    arrowEl.style.color = '#ccc';
+    arrowEl.textContent = '•';
+
+    row.appendChild(colorIcon);
+    row.appendChild(info);
+    row.appendChild(arrowEl);
+    list.appendChild(row);
+  }
+}
+
+function renderDots() {
+  const container = document.getElementById('guessDots');
+  container.innerHTML = '';
+  for (let i = 0; i < MAX_GUESSES; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'tracker-dot';
+    if (i < guesses.length) {
+      dot.classList.add(won && i === guesses.length - 1 ? 'correct' : 'used');
+    }
+    container.appendChild(dot);
+  }
+}
+
+function getColor(guess, actual) {
+  const ratio = Math.abs(guess - actual) / actual;
+  if (ratio <= WIN_THRESHOLD) return 'green';
+  if (ratio <= CLOSE_THRESHOLD) return 'orange';
+  return 'red';
+}
+
+function getArrow(guess, actual) {
+  if (guess < actual) return { symbol: '↑', cls: 'arrow-up', label: 'Too low' };
+  if (guess > actual) return { symbol: '↓', cls: 'arrow-down', label: 'Too high' };
+  return { symbol: '✓', cls: 'arrow-up', label: 'Exact!' };
+}
+
+function getColorEmoji(color) {
+  return color === 'green' ? '🟢' : color === 'orange' ? '🟡' : '🔴';
+}
+
+function submitGuess() {
+  if (gameOver) return;
+  const input = document.getElementById('priceInput');
+  const val = parseFloat(input.value);
+  if (isNaN(val) || val < 0) {
+    showError('Please enter a valid price.');
+    shakeInput();
+    return;
+  }
+  document.getElementById('errorMsg').textContent = '';
+  guesses.push(val);
+
+  const actual = product.price;
+  const ratio = Math.abs(val - actual) / actual;
+  if (ratio <= WIN_THRESHOLD) {
+    won = true;
+    gameOver = true;
+  } else if (guesses.length >= MAX_GUESSES) {
+    gameOver = true;
+  }
+
+  renderGuess(val, actual, guesses.length - 1);
+  renderDots();
+  input.value = '';
+  saveGame();
+
+  if (gameOver) {
+    document.getElementById('inputArea').style.display = 'none';
+    showResult(actual);
+    recordStats();
+    if (won) launchConfetti();
+  }
+}
+
+function renderGuess(guess, actual, index) {
+  const color = getColor(guess, actual);
+  const arrow = getArrow(guess, actual);
+  const isWin = color === 'green';
+
+  const row = document.getElementById(`guess-row-${index}`);
+  row.className = 'guess-row filled';
+
+  const colorIcon = row.children[0];
+  colorIcon.className = `guess-color ${color}`;
+  colorIcon.style.background = '';
+  colorIcon.style.border = '';
+  colorIcon.textContent = isWin ? '✓' : color === 'orange' ? '~' : '✗';
+
+  const info = row.children[1];
+  const priceEl = info.children[0];
+  priceEl.style.color = '';
+  priceEl.textContent = `$${guess.toFixed(2)}`;
+
+  const arrowEl = row.children[2];
+  arrowEl.style.color = '';
+  arrowEl.className = `guess-arrow arrow-${color}`;
+  arrowEl.textContent = isWin ? '✓' : arrow.symbol;
+}
+
+function showResult(actual) {
+  const panel = document.getElementById('resultPanel');
+  panel.style.display = 'block';
+  panel.className = `result-panel ${won ? 'win' : 'lose'}`;
+
+  const titles = {
+    win: ['Bargain Hunter!', 'Cha-Ching!', 'You Know Your Joe\'s!', 'Incredible Shopper!'],
+    lose: ['Almost!', 'Better Luck Tomorrow!', 'That\'s a Tricky One!']
+  };
+  const iconWin = ['🛒', '🎉', '🏆', '⭐'];
+  const iconLose = ['😅', '🤔', '😬'];
+
+  const t = won ? titles.win : titles.lose;
+  const ic = won ? iconWin : iconLose;
+  const pick = guesses.length % t.length;
+
+  document.getElementById('resultIcon').textContent = ic[pick];
+  document.getElementById('resultTitle').textContent = t[pick];
+  document.getElementById('resultPrice').textContent = `$${actual.toFixed(2)}`;
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function shareResult() {
+  const actual = product.price;
+  const rows = guesses.map(g => {
+    const color = getColor(g, actual);
+    const arrow = getArrow(g, actual);
+    return `${getColorEmoji(color)} $${g.toFixed(2)} ${color === 'green' ? '✓' : arrow.symbol}`;
+  }).join('\n');
+
+  const result = won
+    ? `Trader Joe's-dle #${getDayIndex()} ${guesses.length}/${MAX_GUESSES} 🛒`
+    : `Trader Joe's-dle #${getDayIndex()} X/${MAX_GUESSES} 😅`;
+
+  const text = `${result}\n${product.name}\n\n${rows}\n\nActual: $${actual.toFixed(2)}`;
+  navigator.clipboard.writeText(text).then(() => {
+    document.getElementById('copyNotice').textContent = '✓ Copied to clipboard!';
+    setTimeout(() => document.getElementById('copyNotice').textContent = '', 2500);
+  });
+}
+
+function showError(msg) {
+  document.getElementById('errorMsg').textContent = msg;
+  setTimeout(() => document.getElementById('errorMsg').textContent = '', 2500);
+}
+
+function shakeInput() {
+  const wrap = document.getElementById('inputWrap');
+  wrap.classList.add('shake');
+  wrap.addEventListener('animationend', () => wrap.classList.remove('shake'), { once: true });
+}
+
+function launchConfetti() {
+  const colors = ['#cc2529', '#003d5b', '#f0e8d8', '#2d7a2d', '#d4760a'];
+  for (let i = 0; i < 80; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + 'vw';
+    piece.style.top = '-10px';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.width = (6 + Math.random() * 6) + 'px';
+    piece.style.height = (6 + Math.random() * 6) + 'px';
+    piece.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+    piece.style.animationDelay = (Math.random() * 0.8) + 's';
+    document.body.appendChild(piece);
+    piece.addEventListener('animationend', () => piece.remove());
+  }
+}
+
+init();
+</script>
+</body>
+</html>
