@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0014)about:internet -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trader Joe's-dle</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./Trader Joe&#39;s-dle_files/css2" rel="stylesheet">
 <style>
   :root {
     --tj-red: #cc2529;
@@ -562,7 +562,7 @@
     <h1>Trader <span>Joe's</span>-dle</h1>
     <div class="header-sub">Guess the Trader Joe's price in 6 tries</div>
     <button class="stats-btn" onclick="openStats()" title="Statistics">Stats</button>
-    <div class="date-badge" id="dateBadge">—</div>
+    <div class="date-badge" id="dateBadge">Fri, Apr 17</div>
   </div>
 </header>
 
@@ -581,27 +581,20 @@
 <main>
   <div class="product-card">
     <div class="product-label">Today's product</div>
-    <div class="product-name" id="productName">Loading...</div>
-    <div class="product-image-wrap loading" id="productImageWrap"></div>
+    <div class="product-name" id="productName">Breaded Mozzarella Cheese Sticks</div>
+    <div class="product-image-wrap" id="productImageWrap"><img alt="Breaded Mozzarella Cheese Sticks" referrerpolicy="no-referrer" src="./Trader Joe&#39;s-dle_files/cq5dam.thumbnail.319.319.png" class="loaded"></div>
   </div>
 
-  <div class="guess-tracker" id="guessDots"></div>
+  <div class="guess-tracker" id="guessDots"><div class="tracker-dot"></div><div class="tracker-dot"></div><div class="tracker-dot"></div><div class="tracker-dot"></div><div class="tracker-dot"></div><div class="tracker-dot"></div></div>
 
-  <div class="guess-list" id="guessList"></div>
+  <div class="guess-list" id="guessList"><div class="guess-row empty" id="guess-row-0"><div class="guess-color" style="background: var(--tj-tan); border: 2px solid rgb(221, 221, 221);"></div><div class="guess-info"><div class="guess-price" style="color: rgb(204, 204, 204);">—</div></div><div class="guess-arrow" style="color: rgb(204, 204, 204);">•</div></div><div class="guess-row empty" id="guess-row-1"><div class="guess-color" style="background: var(--tj-tan); border: 2px solid rgb(221, 221, 221);"></div><div class="guess-info"><div class="guess-price" style="color: rgb(204, 204, 204);">—</div></div><div class="guess-arrow" style="color: rgb(204, 204, 204);">•</div></div><div class="guess-row empty" id="guess-row-2"><div class="guess-color" style="background: var(--tj-tan); border: 2px solid rgb(221, 221, 221);"></div><div class="guess-info"><div class="guess-price" style="color: rgb(204, 204, 204);">—</div></div><div class="guess-arrow" style="color: rgb(204, 204, 204);">•</div></div><div class="guess-row empty" id="guess-row-3"><div class="guess-color" style="background: var(--tj-tan); border: 2px solid rgb(221, 221, 221);"></div><div class="guess-info"><div class="guess-price" style="color: rgb(204, 204, 204);">—</div></div><div class="guess-arrow" style="color: rgb(204, 204, 204);">•</div></div><div class="guess-row empty" id="guess-row-4"><div class="guess-color" style="background: var(--tj-tan); border: 2px solid rgb(221, 221, 221);"></div><div class="guess-info"><div class="guess-price" style="color: rgb(204, 204, 204);">—</div></div><div class="guess-arrow" style="color: rgb(204, 204, 204);">•</div></div><div class="guess-row empty" id="guess-row-5"><div class="guess-color" style="background: var(--tj-tan); border: 2px solid rgb(221, 221, 221);"></div><div class="guess-info"><div class="guess-price" style="color: rgb(204, 204, 204);">—</div></div><div class="guess-arrow" style="color: rgb(204, 204, 204);">•</div></div></div>
 
   <div class="input-area" id="inputArea">
     <label class="input-label">Your price guess</label>
     <div class="input-row">
       <div class="price-input-wrap" id="inputWrap">
         <span class="dollar-sign">$</span>
-        <input
-          type="number"
-          class="price-input"
-          id="priceInput"
-          placeholder="0.00"
-          min="0"
-          step="0.01"
-        >
+        <input type="number" class="price-input" id="priceInput" placeholder="0.00" min="0" step="0.01">
       </div>
       <button class="guess-btn" id="guessBtn" onclick="submitGuess()">Guess</button>
     </div>
@@ -634,7 +627,7 @@
 </div>
 
 <footer>
-  Prices sourced from <a href="https://traderjoesprices.com" target="_blank">traderjoesprices.com</a> (Chicago store, may vary by region).
+  Prices sourced from <a href="https://traderjoesprices.com/" target="_blank">traderjoesprices.com</a> (Chicago store, may vary by region).
   Not affiliated with Trader Joe's.
 </footer>
 
@@ -763,10 +756,31 @@ function getDayIndex() {
   return Math.floor((today - epoch) / 86400000);
 }
 
+function seededShuffle(array, seed) {
+  let rng = mulberry32(seed);
+  let arr = [...array];
+
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function mulberry32(a) {
+  return function() {
+    let t = a += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  }
+}
+
+const SHUFFLED = seededShuffle(PRODUCTS, 12345);
+
 function getProduct() {
   const day = getDayIndex();
-  const idx = (day * 53 + 17) % PRODUCTS.length;
-  return PRODUCTS[idx];
+  return SHUFFLED[day % SHUFFLED.length];
 }
 
 let product = getProduct();
@@ -866,19 +880,30 @@ function restoreGame() {
 
 function loadProductImage() {
   const wrap = document.getElementById('productImageWrap');
+
+  // ✅ clear previous image
+  wrap.innerHTML = '';
+  wrap.classList.add('loading');
+
   if (!product.img) {
     showImageFallback(wrap);
     return;
   }
+
   const base = 'https://www.traderjoes.com' + product.img;
   const img = document.createElement('img');
   img.alt = product.name;
   img.referrerPolicy = 'no-referrer';
-  img.onload = () => { wrap.classList.remove('loading'); img.classList.add('loaded'); };
-  img.onerror = () => {
-    if (img.src !== base) { img.src = base; }
-    else { showImageFallback(wrap); }
+
+  img.onload = () => {
+    wrap.classList.remove('loading');
+    img.classList.add('loaded');
   };
+
+  img.onerror = () => {
+    showImageFallback(wrap);
+  };
+
   img.src = base + '/jcr:content/renditions/cq5dam.thumbnail.319.319.png';
   wrap.appendChild(img);
 }
@@ -1082,5 +1107,6 @@ function launchConfetti() {
 
 init();
 </script>
-</body>
-</html>
+
+
+</body></html>
